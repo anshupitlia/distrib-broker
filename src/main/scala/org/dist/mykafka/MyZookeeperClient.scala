@@ -2,7 +2,6 @@ package org.dist.mykafka
 
 import org.I0Itec.zkclient.exception.ZkNoNodeException
 import org.I0Itec.zkclient.{IZkChildListener, ZkClient}
-import org.dist.simplekafka.BrokerChangeListener
 import org.dist.simplekafka.common.JsonSerDes
 import org.dist.simplekafka.util.ZkUtils.Broker
 
