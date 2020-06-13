@@ -54,6 +54,7 @@ class CreateTopicCommandTest extends FunSuite {
     createCommandTest.createTopic("topic1", noOfPartitions, replicationFactor)
     assert(zookeeperClient.topicName == "topic1")
     assert(zookeeperClient.partitionReplicas.size == noOfPartitions)
+    print(zookeeperClient.partitionReplicas)
     zookeeperClient.partitionReplicas.map(p => p.brokerIds).foreach(_.size == replicationFactor)
   }
 

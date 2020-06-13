@@ -2,9 +2,7 @@ package org.dist.simplekafka
 
 import java.util.Random
 
-import org.dist.simplekafka.util.AdminUtils.rand
-
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.{mutable}
 
 case class PartitionReplicas(partitionId:Int, brokerIds:List[Int])
 
@@ -18,7 +16,6 @@ class CreateTopicCommand(zookeeperClient:ZookeeperClient, partitionAssigner:Repl
     val partitionReplicas: Set[PartitionReplicas] = assignReplicasToBrokers(brokerIds.toList, noOfPartitions, replicationFactor)
     // register topic with partition assignments to zookeeper
     zookeeperClient.setPartitionReplicasForTopic(topicName, partitionReplicas)
-
   }
 
   //on new topic creation
@@ -36,7 +33,7 @@ class CreateTopicCommand(zookeeperClient:ZookeeperClient, partitionAssigner:Repl
    * 1. Assign the first replica of each partition by round-robin, starting from a random position in the broker list.
    * 2. Assign the remaining replicas of each partition with an increasing shift.
    *
-   * Here is an example of assigning
+   * Here is an example of assigning 10 partitions 3 replicas to 5 brokers
    * broker-0  broker-1  broker-2  broker-3  broker-4
    * p0        p1        p2        p3        p4       (1st replica)
    * p5        p6        p7        p8        p9       (1st replica)
@@ -45,8 +42,7 @@ class CreateTopicCommand(zookeeperClient:ZookeeperClient, partitionAssigner:Repl
    * p3        p4        p0        p1        p2       (3nd replica)
    * p7        p8        p9        p5        p6       (3nd replica)
    */
-  def assignReplicasToBrokers(brokerList: List[Int], nPartitions: Int, replicationFactor: Int) = {
-
+  def assignReplicasToBrokers(brokerList: List[Int], nPartitions: Int, replicationFactor: Int)  = {
     val ret = new mutable.HashMap[Int, List[Int]]()
     val startIndex = rand.nextInt(brokerList.size)
     var currentPartitionId = 0
@@ -65,7 +61,6 @@ class CreateTopicCommand(zookeeperClient:ZookeeperClient, partitionAssigner:Repl
     val partitionIds = ret.toMap.keySet
     partitionIds.map(id => PartitionReplicas(id, ret(id)))
   }
-
 
   private def getWrappedIndex(firstReplicaIndex: Int, secondReplicaShift: Int, replicaIndex: Int, nBrokers: Int): Int = {
     val shift = 1 + (secondReplicaShift + replicaIndex) % (nBrokers - 1)
