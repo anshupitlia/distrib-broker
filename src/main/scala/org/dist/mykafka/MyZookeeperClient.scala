@@ -21,8 +21,8 @@ class MyZookeeperClient(zkClient:ZkClient) {
 
 
   def registerBroker(broker:Broker) = {
-    val brokerData = JsonSerDes.serialize(broker)
     val brokerPath = getBrokerPath(broker.id)
+    val brokerData = JsonSerDes.serialize(broker)
     createEphemeralPath(zkClient, brokerPath, brokerData)
   }
 
